@@ -12,7 +12,7 @@ type DB struct {
 	Pool *pgxpool.Pool
 }
 
-func NewDbConnection(config *config.Config) (*pgxpool.Pool, error) {
+func NewDbConnection(config *config.Config) (*DB, error) {
 	poolCfg := config.Pool
 	cfg, err := pgxpool.ParseConfig(config.Database.DSN())
 	if err != nil {
@@ -33,7 +33,7 @@ func NewDbConnection(config *config.Config) (*pgxpool.Pool, error) {
 		return nil, fmt.Errorf("error connecting to database: %w", err)
 	}
 
-	return pool, nil
+	return &DB{Pool: pool}, nil
 }
 
 func (db *DB) Close() {

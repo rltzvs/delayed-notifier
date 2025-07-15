@@ -17,6 +17,7 @@ import (
 	"delayed-notifier/internal/controller/http/middleware"
 	"delayed-notifier/internal/logger"
 	"delayed-notifier/internal/repository/postgres"
+	"delayed-notifier/internal/repository/redis"
 	"delayed-notifier/internal/service"
 )
 
@@ -35,16 +36,24 @@ func main() {
 	logg.Info("logger initialized")
 
 	// DB connection
-	dbPool, err := postgres.NewDbConnection(cfg)
+	db, err := postgres.NewDbConnection(cfg)
 	if err != nil {
 		logg.Error("db connection error", slog.Any("error", err))
 		os.Exit(1)
 	}
 	logg.Info("db connection initialized")
 
+	redisClient, err := redis.NewRedisClient(cfg)
+	if err != nil {
+		logg.Error("redis connection error", slog.Any("error", err))
+		os.Exit(1)
+	}
+	logg.Info("redis connection initialized")
+
 	// Repository and service
-	notifyRepo := postgres.NewNotifyDBRepository(dbPool)
-	notifyService := service.NewNotifyService(notifyRepo)
+	notifyRepo := postgres.NewNotifyDBRepository(db.Pool)
+	cacheRepo := redis.NewNotifyRedisRepository(redisClient, logg)
+	notifyService := service.NewNotifyService(notifyRepo, cacheRepo)
 
 	// Router and middleware
 	r := chi.NewRouter()

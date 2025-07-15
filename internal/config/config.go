@@ -37,6 +37,7 @@ type RedisConfig struct {
 	Host     string
 	Port     string
 	Password string
+	DB       int
 }
 
 type Config struct {
@@ -66,6 +67,7 @@ func New() (*Config, error) {
 			Host:     getEnv("REDIS_HOST", "redis"),
 			Port:     getEnv("REDIS_PORT", "6379"),
 			Password: getEnv("REDIS_PASSWORD", ""),
+			DB:       getEnvAsInt("REDIS_DB", 0),
 		},
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST", "postgres"),
