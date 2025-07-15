@@ -1,0 +1,48 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TARGET: api
+    container_name: delayed-notifier-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+    command: [/usr/local/bin/api]
+
+  # worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       TARGET: worker
+  #   container_name: delayed-notifier-worker
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   command: [/usr/local/bin/worker]
+
+  postgres:
+    image: postgres:16
+    container_name: delayed-notifier-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:5435"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    container_name: delayed-notifier-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata:
