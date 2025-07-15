@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"time"
@@ -53,10 +52,10 @@ func (c *DatabaseConfig) DSN() string {
 		c.User, c.Password, c.Host, c.Port, c.Name)
 }
 
-func New() *Config {
+func New() (*Config, error) {
 	err := godotenv.Load("/.env")
 	if err != nil {
-		log.Fatal("error loading .env file")
+		return nil, fmt.Errorf("failed to load env: %w", err)
 	}
 	return &Config{
 		Server: ServerConfig{
@@ -84,7 +83,7 @@ func New() *Config {
 		Logger: LoggerConfig{
 			Level: getEnv("LOG_LEVEL", "debug"),
 		},
-	}
+	}, nil
 }
 
 func getEnv(key, defaultValue string) string {

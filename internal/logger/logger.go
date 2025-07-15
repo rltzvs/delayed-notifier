@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func NewLogger(logLevel string) *slog.Logger {
+func New(logLevel string) *slog.Logger {
 	var slogLevel slog.Level
 	switch logLevel {
 	case "debug":
