@@ -40,12 +40,19 @@ type RedisConfig struct {
 	DB       int
 }
 
+type KafkaConfig struct {
+	Host  string
+	Port  string
+	Topic string
+}
+
 type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
 	Logger   LoggerConfig
 	Pool     PoolConfig
 	Redis    RedisConfig
+	Kafka    KafkaConfig
 }
 
 func (c *DatabaseConfig) DSN() string {
@@ -84,6 +91,11 @@ func New() (*Config, error) {
 		},
 		Logger: LoggerConfig{
 			Level: getEnv("LOG_LEVEL", "debug"),
+		},
+		Kafka: KafkaConfig{
+			Host:  getEnv("KAFKA_HOST", "localhost"),
+			Port:  getEnv("KAFKA_PORT", "9092"),
+			Topic: getEnv("KAFKA_TOPIC", "notify-topic"),
 		},
 	}, nil
 }

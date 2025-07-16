@@ -18,13 +18,18 @@ type NotifyCacheRepository interface {
 	DeleteNotify(ctx context.Context, notifyID string) error
 }
 
-type NotifyService struct {
-	db    NotifyDBRepository
-	cache NotifyCacheRepository
+type NotifyProducer interface {
+	Send(ctx context.Context, notify entity.Notify) error
 }
 
-func NewNotifyService(db NotifyDBRepository, cache NotifyCacheRepository) *NotifyService {
-	return &NotifyService{db: db, cache: cache}
+type NotifyService struct {
+	db       NotifyDBRepository
+	cache    NotifyCacheRepository
+	producer NotifyProducer
+}
+
+func NewNotifyService(db NotifyDBRepository, cache NotifyCacheRepository, producer NotifyProducer) *NotifyService {
+	return &NotifyService{db: db, cache: cache, producer: producer}
 }
 
 func (s *NotifyService) CreateNotify(ctx context.Context, notify entity.Notify) (entity.Notify, error) {

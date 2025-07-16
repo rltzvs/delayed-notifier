@@ -17,6 +17,7 @@ import (
 	"delayed-notifier/internal/controller/http/middleware"
 	"delayed-notifier/internal/logger"
 	"delayed-notifier/internal/repository/postgres"
+	"delayed-notifier/internal/repository/producer"
 	"delayed-notifier/internal/repository/redis"
 	"delayed-notifier/internal/service"
 )
@@ -50,10 +51,18 @@ func main() {
 	}
 	logg.Info("redis connection initialized")
 
+	// Kafka producer
+	producer := producer.NewNotifyProducer(cfg.Kafka.Host+":"+cfg.Kafka.Port, cfg.Kafka.Topic)
+	if err != nil {
+		logg.Error("failed to initialize notify producer", slog.Any("error", err))
+		os.Exit(1)
+	}
+	logg.Info("notify producer initialized")
+
 	// Repository and service
 	notifyRepo := postgres.NewNotifyDBRepository(db.Pool)
 	cacheRepo := redis.NewNotifyRedisRepository(redisClient, logg)
-	notifyService := service.NewNotifyService(notifyRepo, cacheRepo)
+	notifyService := service.NewNotifyService(notifyRepo, cacheRepo, producer)
 
 	// Router and middleware
 	r := chi.NewRouter()

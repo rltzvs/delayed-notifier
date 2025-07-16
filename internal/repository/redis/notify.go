@@ -20,7 +20,6 @@ func NewNotifyRedisRepository(client *RedisClient, logger *slog.Logger) *NotifyR
 	}
 }
 
-// Кэшируем всю структуру Notify (marshal/unmarshal)
 func (r *NotifyRedisRepository) SetNotify(ctx context.Context, notify entity.Notify, ttl time.Duration) error {
 	data, err := json.Marshal(notify)
 	if err != nil {
