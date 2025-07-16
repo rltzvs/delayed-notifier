@@ -72,3 +72,56 @@ func (r *NotifyDBRepository) DeleteNotify(ctx context.Context, notifyID string) 
 
 	return nil
 }
+
+func (r *NotifyDBRepository) GetReadyNotifies(ctx context.Context) ([]entity.Notify, error) {
+	query := `
+		SELECT id, send_at, message, status
+		FROM notify
+		WHERE send_at <= NOW() AND status = $1
+	`
+
+	rows, err := r.Pool.Query(ctx, query, entity.StatusScheduled)
+	if err != nil {
+		return nil, fmt.Errorf("GetReadyNotifies query: %w", err)
+	}
+	defer rows.Close()
+
+	var notifies []entity.Notify
+	for rows.Next() {
+		var notify entity.Notify
+		if err := rows.Scan(
+			&notify.ID,
+			&notify.SendAt,
+			&notify.Message,
+			&notify.Status,
+		); err != nil {
+			return nil, fmt.Errorf("GetReadyNotifies scan: %w", err)
+		}
+		notifies = append(notifies, notify)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetReadyNotifies iteration: %w", err)
+	}
+
+	return notifies, nil
+}
+
+func (r *NotifyDBRepository) UpdateNotifyStatus(ctx context.Context, notifyID string, status string) error {
+	query := `
+		UPDATE notify
+		SET status = $1
+		WHERE id = $2
+	`
+
+	cmdTag, err := r.Pool.Exec(ctx, query, status, notifyID)
+	if err != nil {
+		return fmt.Errorf("UpdateNotifyStatus: exec: %w", err)
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("UpdateNotifyStatus: no rows affected for ID=%s", notifyID)
+	}
+
+	return nil
+}

@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"delayed-notifier/internal/entity"
+	"fmt"
+	"log/slog"
 	"time"
 )
 
@@ -10,6 +12,8 @@ type NotifyDBRepository interface {
 	CreateNotify(ctx context.Context, notify entity.Notify) (entity.Notify, error)
 	GetNotify(ctx context.Context, notifyID string) (entity.Notify, error)
 	DeleteNotify(ctx context.Context, notifyID string) error
+	GetReadyNotifies(ctx context.Context) ([]entity.Notify, error)
+	UpdateNotifyStatus(ctx context.Context, notifyID string, status string) error
 }
 
 type NotifyCacheRepository interface {
@@ -26,10 +30,11 @@ type NotifyService struct {
 	db       NotifyDBRepository
 	cache    NotifyCacheRepository
 	producer NotifyProducer
+	logger   *slog.Logger
 }
 
-func NewNotifyService(db NotifyDBRepository, cache NotifyCacheRepository, producer NotifyProducer) *NotifyService {
-	return &NotifyService{db: db, cache: cache, producer: producer}
+func NewNotifyService(db NotifyDBRepository, cache NotifyCacheRepository, producer NotifyProducer, logger *slog.Logger) *NotifyService {
+	return &NotifyService{db: db, cache: cache, producer: producer, logger: logger}
 }
 
 func (s *NotifyService) CreateNotify(ctx context.Context, notify entity.Notify) (entity.Notify, error) {
@@ -57,4 +62,24 @@ func (s *NotifyService) GetNotify(ctx context.Context, notifyID string) (entity.
 func (s *NotifyService) DeleteNotify(ctx context.Context, notifyID string) error {
 	_ = s.cache.DeleteNotify(ctx, notifyID)
 	return s.db.DeleteNotify(ctx, notifyID)
+}
+
+func (s *NotifyService) ScheduleReadyNotifies(ctx context.Context) error {
+	notifies, err := s.db.GetReadyNotifies(ctx)
+	if err != nil {
+		return fmt.Errorf("ScheduleReadyNotifies: get ready notifies: %w", err)
+	}
+
+	for _, notify := range notifies {
+		if err := s.producer.Send(ctx, notify); err != nil {
+			s.logger.Error("ScheduleReadyNotifies: failed to send notify", slog.String("ID", notify.ID), slog.Any("error", err))
+			continue
+		}
+
+		if err := s.db.UpdateNotifyStatus(ctx, notify.ID, entity.StatusQueued); err != nil {
+			return fmt.Errorf("ScheduleReadyNotifies: update status for ID=%s: %w", notify.ID, err)
+		}
+	}
+
+	return nil
 }
