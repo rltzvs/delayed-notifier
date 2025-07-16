@@ -1,7 +1,7 @@
 package http
 
 import (
-	"context"
+	"delayed-notifier/internal/controller"
 	"delayed-notifier/internal/entity"
 	"encoding/json"
 	"errors"
@@ -11,18 +11,12 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type NotifyService interface {
-	CreateNotify(ctx context.Context, notify entity.Notify) (entity.Notify, error)
-	GetNotify(ctx context.Context, notifyID string) (entity.Notify, error)
-	DeleteNotify(ctx context.Context, notifyID string) error
-}
-
 type NotifyHandler struct {
-	service NotifyService
+	service controller.NotifyService
 	logger  *slog.Logger
 }
 
-func NewNotifyHandler(service NotifyService, logger *slog.Logger) *NotifyHandler {
+func NewNotifyHandler(service controller.NotifyService, logger *slog.Logger) *NotifyHandler {
 	return &NotifyHandler{
 		service: service,
 		logger:  logger,

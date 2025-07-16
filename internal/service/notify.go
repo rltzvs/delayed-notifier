@@ -64,6 +64,10 @@ func (s *NotifyService) DeleteNotify(ctx context.Context, notifyID string) error
 	return s.db.DeleteNotify(ctx, notifyID)
 }
 
+func (s *NotifyService) UpdateNotifyStatus(ctx context.Context, notifyID string, status string) error {
+	return s.db.UpdateNotifyStatus(ctx, notifyID, status)
+}
+
 func (s *NotifyService) ScheduleReadyNotifies(ctx context.Context) error {
 	notifies, err := s.db.GetReadyNotifies(ctx)
 	if err != nil {
@@ -76,7 +80,7 @@ func (s *NotifyService) ScheduleReadyNotifies(ctx context.Context) error {
 			continue
 		}
 
-		if err := s.db.UpdateNotifyStatus(ctx, notify.ID, entity.StatusQueued); err != nil {
+		if err := s.UpdateNotifyStatus(ctx, notify.ID, entity.StatusQueued); err != nil {
 			return fmt.Errorf("ScheduleReadyNotifies: update status for ID=%s: %w", notify.ID, err)
 		}
 	}

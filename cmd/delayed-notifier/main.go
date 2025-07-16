@@ -52,7 +52,7 @@ func main() {
 	logg.Info("redis connection initialized")
 
 	// Kafka producer
-	producer := producer.NewNotifyProducer(cfg.Kafka.Host+":"+cfg.Kafka.Port, cfg.Kafka.Topic)
+	producer := producer.NewNotifyProducer(cfg.Kafka.Host+":"+cfg.Kafka.Port, cfg.Kafka.Topic, logg)
 	if err != nil {
 		logg.Error("failed to initialize notify producer", slog.Any("error", err))
 		os.Exit(1)

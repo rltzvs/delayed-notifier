@@ -15,7 +15,7 @@ type NotifyProducer struct {
 	logger *slog.Logger
 }
 
-func NewNotifyProducer(brokerURL string, topic string) *NotifyProducer {
+func NewNotifyProducer(brokerURL string, topic string, logger *slog.Logger) *NotifyProducer {
 	return &NotifyProducer{
 		writer: kafka.NewWriter(kafka.WriterConfig{
 			Brokers:      []string{brokerURL},
@@ -25,6 +25,7 @@ func NewNotifyProducer(brokerURL string, topic string) *NotifyProducer {
 			Async:        false,
 			BatchTimeout: 10 * time.Millisecond,
 		}),
+		logger: logger,
 	}
 }
 
