@@ -2,10 +2,11 @@ package postgres
 
 import (
 	"context"
-	"delayed-notifier/internal/config"
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	"delayed-notifier/internal/config"
 )
 
 type DB struct {

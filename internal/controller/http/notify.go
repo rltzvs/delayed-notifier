@@ -1,14 +1,15 @@
 package http
 
 import (
-	"delayed-notifier/internal/controller"
-	"delayed-notifier/internal/entity"
 	"encoding/json"
 	"errors"
 	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+
+	"delayed-notifier/internal/controller"
+	"delayed-notifier/internal/entity"
 )
 
 type NotifyHandler struct {
@@ -44,7 +45,11 @@ func (h *NotifyHandler) CreateNotify(w http.ResponseWriter, r *http.Request) {
 	h.logger.Info("notify created", slog.String("id", created.ID))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(created)
+	if err := json.NewEncoder(w).Encode(created); err != nil {
+		h.logger.Error("failed to encode notify", slog.Any("error", err))
+		http.Error(w, "failed to encode notify", http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *NotifyHandler) GetNotify(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +72,11 @@ func (h *NotifyHandler) GetNotify(w http.ResponseWriter, r *http.Request) {
 
 	h.logger.Info("notify fetched", slog.String("id", notify.ID))
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(notify)
+	if err := json.NewEncoder(w).Encode(notify); err != nil {
+		h.logger.Error("failed to encode notify", slog.Any("error", err))
+		http.Error(w, "failed to encode notify", http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *NotifyHandler) DeleteNotify(w http.ResponseWriter, r *http.Request) {

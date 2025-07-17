@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"log/slog"
 
+	"github.com/segmentio/kafka-go"
+
 	"delayed-notifier/internal/controller"
 	"delayed-notifier/internal/entity"
-
-	"github.com/segmentio/kafka-go"
 )
 
 type OrderConsumer struct {
@@ -17,7 +17,7 @@ type OrderConsumer struct {
 	logger  *slog.Logger
 }
 
-func NewOrderConsumer(brokers string, topic string, service controller.NotifyService, logger *slog.Logger) *OrderConsumer {
+func NewOrderConsumer(brokers, topic string, service controller.NotifyService, logger *slog.Logger) *OrderConsumer {
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:        []string{brokers},
 		Topic:          topic,

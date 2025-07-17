@@ -5,3 +5,9 @@ migrate-up:
 
 migrate-down:
 	goose -dir migrations postgres "$(MIGRATE_DB)" down
+
+lint:
+	golangci-lint run ./...
+
+fmt:
+	gci write -s standard -s default -s "prefix(delayed-notifier)" .

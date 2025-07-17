@@ -2,10 +2,11 @@ package redis
 
 import (
 	"context"
-	"delayed-notifier/internal/entity"
 	"encoding/json"
 	"log/slog"
 	"time"
+
+	"delayed-notifier/internal/entity"
 )
 
 type NotifyRedisRepository struct {

@@ -2,10 +2,11 @@ package redis
 
 import (
 	"context"
-	"delayed-notifier/internal/config"
 	"fmt"
 
 	"github.com/redis/go-redis/v9"
+
+	"delayed-notifier/internal/config"
 )
 
 type RedisClient struct {

@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
-	"delayed-notifier/internal/entity"
 	"fmt"
 	"log/slog"
 	"time"
+
+	"delayed-notifier/internal/entity"
 )
 
 type NotifyDBRepository interface {
@@ -13,7 +14,7 @@ type NotifyDBRepository interface {
 	GetNotify(ctx context.Context, notifyID string) (entity.Notify, error)
 	DeleteNotify(ctx context.Context, notifyID string) error
 	GetReadyNotifies(ctx context.Context) ([]entity.Notify, error)
-	UpdateNotifyStatus(ctx context.Context, notifyID string, status string) error
+	UpdateNotifyStatus(ctx context.Context, notifyID, status string) error
 }
 
 type NotifyCacheRepository interface {
@@ -64,7 +65,7 @@ func (s *NotifyService) DeleteNotify(ctx context.Context, notifyID string) error
 	return s.db.DeleteNotify(ctx, notifyID)
 }
 
-func (s *NotifyService) UpdateNotifyStatus(ctx context.Context, notifyID string, status string) error {
+func (s *NotifyService) UpdateNotifyStatus(ctx context.Context, notifyID, status string) error {
 	return s.db.UpdateNotifyStatus(ctx, notifyID, status)
 }
 

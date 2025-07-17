@@ -29,7 +29,7 @@ func main() {
 	// Config
 	cfg, err := config.New()
 	if err != nil {
-		log.Fatal("config error: ", err)
+		log.Fatal("config error: ", err) //nolint:gocritic
 	}
 
 	// Logger

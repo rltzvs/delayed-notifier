@@ -2,12 +2,13 @@ package producer
 
 import (
 	"context"
-	"delayed-notifier/internal/entity"
 	"encoding/json"
 	"log/slog"
 	"time"
 
 	"github.com/segmentio/kafka-go"
+
+	"delayed-notifier/internal/entity"
 )
 
 type NotifyProducer struct {
@@ -15,7 +16,7 @@ type NotifyProducer struct {
 	logger *slog.Logger
 }
 
-func NewNotifyProducer(brokerURL string, topic string, logger *slog.Logger) *NotifyProducer {
+func NewNotifyProducer(brokerURL, topic string, logger *slog.Logger) *NotifyProducer {
 	return &NotifyProducer{
 		writer: kafka.NewWriter(kafka.WriterConfig{
 			Brokers:      []string{brokerURL},

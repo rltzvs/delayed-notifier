@@ -2,12 +2,13 @@ package postgres
 
 import (
 	"context"
-	"delayed-notifier/internal/entity"
 	"errors"
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	"delayed-notifier/internal/entity"
 )
 
 type NotifyDBRepository struct {
@@ -107,7 +108,7 @@ func (r *NotifyDBRepository) GetReadyNotifies(ctx context.Context) ([]entity.Not
 	return notifies, nil
 }
 
-func (r *NotifyDBRepository) UpdateNotifyStatus(ctx context.Context, notifyID string, status string) error {
+func (r *NotifyDBRepository) UpdateNotifyStatus(ctx context.Context, notifyID, status string) error {
 	query := `
 		UPDATE notify
 		SET status = $1

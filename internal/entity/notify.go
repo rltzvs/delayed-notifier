@@ -5,9 +5,7 @@ import (
 	"time"
 )
 
-var (
-	ErrNotifyNotFound = errors.New("notify not found")
-)
+var ErrNotifyNotFound = errors.New("notify not found")
 
 const (
 	StatusScheduled = "scheduled"
