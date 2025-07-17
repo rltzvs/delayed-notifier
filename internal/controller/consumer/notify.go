@@ -87,7 +87,7 @@ func (c *OrderConsumer) Start(ctx context.Context) {
 				slog.Int64("offset", m.Offset),
 			)
 		} else {
-			c.logger.Debug("committed offset", slog.Int64("offset", m.Offset))
+			c.logger.Debug("committed notify offset", slog.Int64("offset", m.Offset))
 		}
 	}
 }

@@ -93,7 +93,7 @@ func New() (*Config, error) {
 			Level: getEnv("LOG_LEVEL", "debug"),
 		},
 		Kafka: KafkaConfig{
-			Host:  getEnv("KAFKA_HOST", "localhost"),
+			Host:  getEnv("KAFKA_HOST", "kafka"),
 			Port:  getEnv("KAFKA_PORT", "9092"),
 			Topic: getEnv("KAFKA_TOPIC", "notify-topic"),
 		},
