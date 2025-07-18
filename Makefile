@@ -11,3 +11,8 @@ lint:
 
 fmt:
 	gci write -s standard -s default -s "prefix(delayed-notifier)" .
+
+generate-mocks:
+	mockery --name=NotifyDBRepository --dir=internal/service --output=internal/repository/postgres/mocks --with-expecter
+	mockery --name=NotifyCacheRepository --dir=internal/service --output=internal/repository/redis/mocks --with-expecter
+	mockery --name=NotifyProducer --dir=internal/service --output=internal/repository/producer/mocks --with-expecter
