@@ -157,7 +157,7 @@ func TestScheduleReadyNotifies(t *testing.T) {
 		ctx, db, _, producer, s := setupTestService(t)
 
 		n1 := entity.Notify{ID: "id1", Message: "m1", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusScheduled}
-		n2 := entity.Notify{ID: "id2", Message: "m2", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusScheduled}
+		n2 := entity.Notify{ID: "id2", Message: "m2", SendAt: mustParseTime(t, "2025-10-26T11:11:11.111111"), Status: entity.StatusScheduled}
 		notifies := []entity.Notify{n1, n2}
 
 		db.On("GetReadyNotifies", ctx).Return(notifies, nil).Once()
@@ -189,7 +189,7 @@ func TestScheduleReadyNotifies(t *testing.T) {
 		ctx, db, _, producer, s := setupTestService(t)
 
 		n1 := entity.Notify{ID: "id1", Message: "m1", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusScheduled}
-		n2 := entity.Notify{ID: "id2", Message: "m2", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusScheduled}
+		n2 := entity.Notify{ID: "id2", Message: "m2", SendAt: mustParseTime(t, "2025-10-26T11:11:11.111111"), Status: entity.StatusScheduled}
 		notifies := []entity.Notify{n1, n2}
 
 		db.On("GetReadyNotifies", ctx).Return(notifies, nil).Once()
@@ -208,7 +208,7 @@ func TestScheduleReadyNotifies(t *testing.T) {
 		ctx, db, _, producer, s := setupTestService(t)
 
 		n1 := entity.Notify{ID: "id1", Message: "m1", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusScheduled}
-		n2 := entity.Notify{ID: "id2", Message: "m2", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusScheduled}
+		n2 := entity.Notify{ID: "id2", Message: "m2", SendAt: mustParseTime(t, "2025-10-26T11:11:11.111111"), Status: entity.StatusScheduled}
 		notifies := []entity.Notify{n1, n2}
 
 		db.On("GetReadyNotifies", ctx).Return(notifies, nil).Once()

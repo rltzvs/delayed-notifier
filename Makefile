@@ -7,7 +7,7 @@ migrate-down:
 	goose -dir migrations postgres "$(MIGRATE_DB)" down
 
 lint:
-	golangci-lint run ./...
+	golangci-lint run --config=.golangci.yml ./...
 
 fmt:
 	gci write -s standard -s default -s "prefix(delayed-notifier)" .
