@@ -24,7 +24,8 @@ func NewNotifyProducer(brokerURL, topic string, logger *slog.Logger) *NotifyProd
 			Balancer:     &kafka.LeastBytes{},
 			RequiredAcks: 1,
 			Async:        false,
-			BatchTimeout: 10 * time.Millisecond,
+			BatchTimeout: 50 * time.Millisecond,
+			MaxAttempts:  3,
 		}),
 		logger: logger,
 	}

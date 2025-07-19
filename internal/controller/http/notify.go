@@ -36,6 +36,7 @@ func (h *NotifyHandler) CreateNotify(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	input.Status = entity.StatusScheduled
 	created, err := h.service.CreateNotify(r.Context(), input)
 	if err != nil {
 		h.logger.Error("failed to create notify", slog.Any("error", err))
