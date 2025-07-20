@@ -184,6 +184,53 @@ func (_c *NotifyService_GetNotify_Call) RunAndReturn(run func(context.Context, s
 	return _c
 }
 
+// ProcessNotify provides a mock function with given fields: ctx, notify
+func (_m *NotifyService) ProcessNotify(ctx context.Context, notify entity.Notify) error {
+	ret := _m.Called(ctx, notify)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ProcessNotify")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, entity.Notify) error); ok {
+		r0 = rf(ctx, notify)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// NotifyService_ProcessNotify_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ProcessNotify'
+type NotifyService_ProcessNotify_Call struct {
+	*mock.Call
+}
+
+// ProcessNotify is a helper method to define mock.On call
+//   - ctx context.Context
+//   - notify entity.Notify
+func (_e *NotifyService_Expecter) ProcessNotify(ctx interface{}, notify interface{}) *NotifyService_ProcessNotify_Call {
+	return &NotifyService_ProcessNotify_Call{Call: _e.mock.On("ProcessNotify", ctx, notify)}
+}
+
+func (_c *NotifyService_ProcessNotify_Call) Run(run func(ctx context.Context, notify entity.Notify)) *NotifyService_ProcessNotify_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(entity.Notify))
+	})
+	return _c
+}
+
+func (_c *NotifyService_ProcessNotify_Call) Return(_a0 error) *NotifyService_ProcessNotify_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *NotifyService_ProcessNotify_Call) RunAndReturn(run func(context.Context, entity.Notify) error) *NotifyService_ProcessNotify_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // UpdateNotifyStatus provides a mock function with given fields: ctx, notifyID, status
 func (_m *NotifyService) UpdateNotifyStatus(ctx context.Context, notifyID string, status string) error {
 	ret := _m.Called(ctx, notifyID, status)

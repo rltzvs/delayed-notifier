@@ -21,13 +21,13 @@ func NewNotifyDBRepository(pool *pgxpool.Pool) *NotifyDBRepository {
 
 func (r *NotifyDBRepository) CreateNotify(ctx context.Context, notify entity.Notify) (entity.Notify, error) {
 	query := `
-		INSERT INTO notify (send_at, message, status)
-		VALUES ($1, $2, $3)
+		INSERT INTO notify (send_at, message, status, email)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
 	`
 
 	var id string
-	err := r.Pool.QueryRow(ctx, query, notify.SendAt, notify.Message, notify.Status).Scan(&id)
+	err := r.Pool.QueryRow(ctx, query, notify.SendAt, notify.Message, notify.Status, notify.Email).Scan(&id)
 	if err != nil {
 		return entity.Notify{}, fmt.Errorf("CreateNotify: %w", err)
 	}
@@ -38,7 +38,7 @@ func (r *NotifyDBRepository) CreateNotify(ctx context.Context, notify entity.Not
 
 func (r *NotifyDBRepository) GetNotify(ctx context.Context, notifyID string) (entity.Notify, error) {
 	query := `
-		SELECT id, send_at, message, status
+		SELECT id, send_at, message, status, email
 		FROM notify
 		WHERE id = $1
 	`
@@ -49,6 +49,7 @@ func (r *NotifyDBRepository) GetNotify(ctx context.Context, notifyID string) (en
 		&notify.SendAt,
 		&notify.Message,
 		&notify.Status,
+		&notify.Email,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -76,7 +77,7 @@ func (r *NotifyDBRepository) DeleteNotify(ctx context.Context, notifyID string) 
 
 func (r *NotifyDBRepository) GetReadyNotifies(ctx context.Context) ([]entity.Notify, error) {
 	query := `
-		SELECT id, send_at, message, status
+		SELECT id, send_at, message, status, email
 		FROM notify
 		WHERE send_at <= NOW() AND status = $1
 	`
@@ -95,6 +96,7 @@ func (r *NotifyDBRepository) GetReadyNotifies(ctx context.Context) ([]entity.Not
 			&notify.SendAt,
 			&notify.Message,
 			&notify.Status,
+			&notify.Email,
 		); err != nil {
 			return nil, fmt.Errorf("GetReadyNotifies scan: %w", err)
 		}

@@ -16,6 +16,7 @@ import (
 	httpHandlers "delayed-notifier/internal/controller/http"
 	"delayed-notifier/internal/controller/http/middleware"
 	"delayed-notifier/internal/logger"
+	"delayed-notifier/internal/repository/email"
 	"delayed-notifier/internal/repository/postgres"
 	"delayed-notifier/internal/repository/producer"
 	"delayed-notifier/internal/repository/redis"
@@ -62,7 +63,8 @@ func main() {
 	// Repository and service
 	notifyRepo := postgres.NewNotifyDBRepository(db.Pool)
 	cacheRepo := redis.NewNotifyRedisRepository(redisClient, logg)
-	notifyService := service.NewNotifyService(notifyRepo, cacheRepo, producer, logg)
+	notifierRepo := email.NewMailer(cfg.Mail)
+	notifyService := service.NewNotifyService(notifyRepo, cacheRepo, producer, notifierRepo, logg)
 
 	// worker
 	go func() {

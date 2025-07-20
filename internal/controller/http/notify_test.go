@@ -52,6 +52,7 @@ func TestCreateNotify(t *testing.T) {
 		input := entity.Notify{
 			SendAt:  time.Now().Add(time.Minute),
 			Message: "test message",
+			Email:   "test@example.com",
 		}
 		expected := input
 		expected.Status = entity.StatusScheduled
@@ -120,6 +121,7 @@ func TestCreateNotify(t *testing.T) {
 		input := entity.Notify{
 			SendAt:  time.Now().Add(time.Minute),
 			Message: "test message",
+			Email:   "test@example.com",
 		}
 
 		mockNotifyService.
@@ -148,6 +150,7 @@ func TestGetNotify(t *testing.T) {
 			Message: "reminder",
 			Status:  entity.StatusScheduled,
 			SendAt:  time.Now().Add(time.Minute),
+			Email:   "reminder@example.com",
 		}
 
 		mockService.

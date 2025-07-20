@@ -30,3 +30,4 @@ generate-mocks:
 	mockery --name=NotifyDBRepository --dir=internal/service --output=internal/repository/postgres/mocks --with-expecter
 	mockery --name=NotifyCacheRepository --dir=internal/service --output=internal/repository/redis/mocks --with-expecter
 	mockery --name=NotifyProducer --dir=internal/service --output=internal/repository/producer/mocks --with-expecter
+	mockery --name=Notifier --dir=internal/service --output=internal/repository/email/mocks --with-expecter

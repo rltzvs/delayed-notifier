@@ -46,6 +46,13 @@ type KafkaConfig struct {
 	Topic string
 }
 
+type MailConfig struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+}
+
 type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
@@ -53,6 +60,7 @@ type Config struct {
 	Pool     PoolConfig
 	Redis    RedisConfig
 	Kafka    KafkaConfig
+	Mail     MailConfig
 }
 
 func (c *DatabaseConfig) DSN() string {
@@ -96,6 +104,12 @@ func New() (*Config, error) {
 			Host:  getEnv("KAFKA_HOST", "kafka"),
 			Port:  getEnv("KAFKA_PORT", "9092"),
 			Topic: getEnv("KAFKA_TOPIC", "notify-topic"),
+		},
+		Mail: MailConfig{
+			Host:     getEnv("MAIL_HOST", ""),
+			Port:     getEnvAsInt("MAIL_PORT", 587),
+			User:     getEnv("MAIL_USER", "notifier-app"),
+			Password: getEnv("MAIL_PASSWORD", ""),
 		},
 	}, nil
 }

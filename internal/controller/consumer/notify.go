@@ -69,8 +69,8 @@ func (c *OrderConsumer) Start(ctx context.Context) {
 
 		c.logger.Debug("handling notify message", slog.Any("message", notify))
 
-		if err := c.service.UpdateNotifyStatus(ctx, notify.ID, entity.StatusSent); err != nil {
-			c.logger.Error("failed to set notify status",
+		if err := c.service.ProcessNotify(ctx, notify); err != nil {
+			c.logger.Error("failed to set process notify message",
 				slog.String("notify_id", notify.ID),
 				slog.Any("error", err),
 			)

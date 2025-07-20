@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"delayed-notifier/internal/entity"
+	mock_email "delayed-notifier/internal/repository/email/mocks"
 	mock_db "delayed-notifier/internal/repository/postgres/mocks"
 	mock_producer "delayed-notifier/internal/repository/producer/mocks"
 	mock_cache "delayed-notifier/internal/repository/redis/mocks"
@@ -24,9 +25,10 @@ func setupTestService(t *testing.T) (context.Context, *mock_db.NotifyDBRepositor
 	db := new(mock_db.NotifyDBRepository)
 	cache := new(mock_cache.NotifyCacheRepository)
 	producer := new(mock_producer.NotifyProducer)
+	notifier := new(mock_email.Notifier)
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 
-	s := NewNotifyService(db, cache, producer, logger)
+	s := NewNotifyService(db, cache, producer, notifier, logger)
 
 	return ctx, db, cache, producer, s
 }
@@ -43,7 +45,7 @@ func TestCreateNotify(t *testing.T) {
 		ctx, db, cache, _, s := setupTestService(t)
 
 		sendAt := mustParseTime(t, "2025-10-25T10:10:10.555555")
-		input := entity.Notify{SendAt: sendAt, Message: "test message"}
+		input := entity.Notify{SendAt: sendAt, Message: "test message", Email: "test@example.com"}
 		expected := input
 		expected.ID = "test-id"
 		expected.Status = entity.StatusScheduled
@@ -62,7 +64,7 @@ func TestCreateNotify(t *testing.T) {
 	t.Run("db error", func(t *testing.T) {
 		ctx, db, cache, _, s := setupTestService(t)
 
-		input := entity.Notify{Message: "fail"}
+		input := entity.Notify{Message: "fail", Email: "fail@example.com"}
 		db.On("CreateNotify", ctx, input).Return(entity.Notify{}, assert.AnError).Once()
 
 		result, err := s.CreateNotify(ctx, input)
@@ -78,7 +80,7 @@ func TestGetNotify(t *testing.T) {
 	t.Run("cache hit", func(t *testing.T) {
 		ctx, db, cache, _, s := setupTestService(t)
 
-		n := entity.Notify{ID: "id1", Message: "msg", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusQueued}
+		n := entity.Notify{ID: "id1", Message: "msg", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusQueued, Email: "cache@example.com"}
 		cache.On("GetNotify", ctx, n.ID).Return(n, nil).Once()
 
 		result, err := s.GetNotify(ctx, n.ID)
@@ -92,7 +94,7 @@ func TestGetNotify(t *testing.T) {
 	t.Run("cache miss, db hit", func(t *testing.T) {
 		ctx, db, cache, _, s := setupTestService(t)
 
-		n := entity.Notify{ID: "id2", Message: "msg2", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusQueued}
+		n := entity.Notify{ID: "id2", Message: "msg2", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusQueued, Email: "db@example.com"}
 		cache.On("GetNotify", ctx, n.ID).Return(entity.Notify{}, assert.AnError).Once()
 		db.On("GetNotify", ctx, n.ID).Return(n, nil).Once()
 		cache.On("SetNotify", ctx, n, 24*time.Hour).Return(nil).Once()

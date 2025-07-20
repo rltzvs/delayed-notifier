@@ -27,15 +27,20 @@ type NotifyProducer interface {
 	Send(ctx context.Context, notify entity.Notify) error
 }
 
+type Notifier interface {
+	Send(ctx context.Context, notify entity.Notify) error
+}
+
 type NotifyService struct {
 	db       NotifyDBRepository
 	cache    NotifyCacheRepository
 	producer NotifyProducer
+	notifier Notifier
 	logger   *slog.Logger
 }
 
-func NewNotifyService(db NotifyDBRepository, cache NotifyCacheRepository, producer NotifyProducer, logger *slog.Logger) *NotifyService {
-	return &NotifyService{db: db, cache: cache, producer: producer, logger: logger}
+func NewNotifyService(db NotifyDBRepository, cache NotifyCacheRepository, producer NotifyProducer, notifier Notifier, logger *slog.Logger) *NotifyService {
+	return &NotifyService{db: db, cache: cache, producer: producer, logger: logger, notifier: notifier}
 }
 
 func (s *NotifyService) CreateNotify(ctx context.Context, notify entity.Notify) (entity.Notify, error) {
@@ -87,4 +92,13 @@ func (s *NotifyService) ScheduleReadyNotifies(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (s *NotifyService) ProcessNotify(ctx context.Context, notify entity.Notify) error {
+	err := s.notifier.Send(ctx, notify)
+	if err != nil {
+		_ = s.db.UpdateNotifyStatus(ctx, notify.ID, entity.StatusFailed)
+		return err
+	}
+	return s.db.UpdateNotifyStatus(ctx, notify.ID, entity.StatusSent)
 }
