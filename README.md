@@ -37,8 +37,8 @@ cd delayed-notifier
 docker compose up --build
 # 2. После запуска — примените миграции к базе данных
 make migrate-up
-# 3. Создайте топик Kafka (один раз)
-make create-topic
+# 3. Создайте топики Kafka (один раз)
+make create-topics
 ```
 
 - API будет доступен на `http://localhost:8080`
@@ -48,7 +48,13 @@ make create-topic
 
 ### Переменные окружения
 
-Создайте файл `.env` в корне проекта. Пример:
+Скопируйте файл `env.example` в `.env` и настройте переменные под ваше окружение:
+
+```bash
+cp env.example .env
+```
+
+Пример настроек в `.env`:
 
 ```
 SERVER_PORT=8080

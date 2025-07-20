@@ -1,11 +1,12 @@
 MIGRATE_DB=postgres://notifier_user:postgres@localhost:5435/notifier_db?sslmode=disable
 KAFKA_CONTAINER=delayed-notifier-kafka
 TOPIC_NAME=notify-topic
+DLQ_TOPIC_NAME=notify-topic-dlq
 BROKER=localhost:9092
 PARTITIONS=3
 REPLICATION=1
 
-create-topic:
+create-notify-topic:
 	docker exec $(KAFKA_CONTAINER) kafka-topics.sh \
 		--create \
 		--if-not-exists \
@@ -13,6 +14,17 @@ create-topic:
 		--bootstrap-server $(BROKER) \
 		--partitions $(PARTITIONS) \
 		--replication-factor $(REPLICATION)
+
+create-notify-dlq-topic:
+	docker exec $(KAFKA_CONTAINER) kafka-topics.sh \
+		--create \
+		--if-not-exists \
+		--topic $(DLQ_TOPIC_NAME) \
+		--bootstrap-server $(BROKER) \
+		--partitions $(PARTITIONS) \
+		--replication-factor $(REPLICATION)
+
+create-topics: create-notify-topic create-notify-dlq-topic
 
 migrate-up:
 	goose -dir migrations postgres "$(MIGRATE_DB)" up
