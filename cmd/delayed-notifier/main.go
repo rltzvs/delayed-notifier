@@ -66,24 +66,6 @@ func main() {
 	notifierRepo := email.NewMailer(cfg.Mail)
 	notifyService := service.NewNotifyService(notifyRepo, cacheRepo, producer, notifierRepo, logg)
 
-	// worker
-	go func() {
-		ticker := time.NewTicker(1 * time.Minute)
-		defer ticker.Stop()
-
-		for {
-			select {
-			case <-ticker.C:
-				if err := notifyService.ScheduleReadyNotifies(ctx); err != nil {
-					logg.Error("schedule error", slog.Any("error", err))
-				}
-			case <-ctx.Done():
-				logg.Info("scheduler stopped")
-				return
-			}
-		}
-	}()
-
 	// Router and middleware
 	r := chi.NewRouter()
 	r.Use(middleware.LoggingMiddleware(logg))

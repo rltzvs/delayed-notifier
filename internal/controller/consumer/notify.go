@@ -21,6 +21,7 @@ func NewOrderConsumer(brokers, topic string, service controller.NotifyService, l
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:        []string{brokers},
 		Topic:          topic,
+		GroupID:        "notify-worker-group",
 		MinBytes:       10e3,
 		MaxBytes:       10e6,
 		CommitInterval: 0,

@@ -107,7 +107,7 @@ func New() (*Config, error) {
 		},
 		Mail: MailConfig{
 			Host:     getEnv("MAIL_HOST", ""),
-			Port:     getEnvAsInt("MAIL_PORT", 587),
+			Port:     getEnvAsInt("MAIL_PORT", 465),
 			User:     getEnv("MAIL_USER", "notifier-app"),
 			Password: getEnv("MAIL_PASSWORD", ""),
 		},

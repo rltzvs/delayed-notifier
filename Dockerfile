@@ -15,4 +15,3 @@ COPY --from=builder /app/worker /usr/local/bin/worker
 COPY .env /.env
 
 EXPOSE 8080
-ENTRYPOINT ["/usr/local/bin/api"]

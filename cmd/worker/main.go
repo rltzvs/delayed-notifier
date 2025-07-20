@@ -63,6 +63,24 @@ func main() {
 
 	kafkaConsumer := consumer.NewOrderConsumer(cfg.Kafka.Host+":"+cfg.Kafka.Port, cfg.Kafka.Topic, notifyService, logg)
 
+	// worker
+	go func() {
+		ticker := time.NewTicker(10 * time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				if err := notifyService.ScheduleReadyNotifies(ctx); err != nil {
+					logg.Error("schedule error", slog.Any("error", err))
+				}
+			case <-ctx.Done():
+				logg.Info("scheduler stopped")
+				return
+			}
+		}
+	}()
+
 	go func() {
 		kafkaConsumer.Start(ctx)
 	}()
