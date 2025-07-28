@@ -83,6 +83,14 @@ services:
       timeout: 5s
       retries: 5
 
+  frontend:
+    image: nginx:alpine
+    container_name: delayed-notifier-frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+
 volumes:
   pgdata:
   redisdata:

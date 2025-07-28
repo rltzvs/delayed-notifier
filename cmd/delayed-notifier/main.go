@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 
 	"delayed-notifier/internal/config"
 	httpHandlers "delayed-notifier/internal/controller/http"
@@ -69,6 +70,15 @@ func main() {
 	// Router and middleware
 	r := chi.NewRouter()
 	r.Use(middleware.LoggingMiddleware(logg))
+
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   cfg.CORS.AllowedOrigins,
+		AllowedMethods:   []string{"GET", "POST", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
 
 	notifyHandler := httpHandlers.NewNotifyHandler(notifyService, logg)
 	r.Route("/notify", func(r chi.Router) {
