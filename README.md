@@ -51,7 +51,7 @@ make create-topics
 Скопируйте файл `env.example` в `.env` и настройте переменные под ваше окружение:
 
 ```bash
-cp env.example .env
+cp .env.example .env
 ```
 
 Пример настроек в `.env`:
@@ -74,6 +74,7 @@ MAIL_PORT=465
 MAIL_USER=notifier-app
 MAIL_PASSWORD=yourpassword
 LOG_LEVEL=debug
+CORS_ALLOWED_ORIGINS=http://localhost:3000
 ```
 
 ### Миграции
@@ -161,5 +162,3 @@ curl -X DELETE http://localhost:8080/notify/<id>
 ## CI
 
 В проекте настроен GitHub Actions для автоматической проверки кода: линтинг и тесты при каждом push/pull request.
-
----

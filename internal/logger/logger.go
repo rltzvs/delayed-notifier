@@ -3,7 +3,6 @@ package logger
 import (
 	"log/slog"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -23,28 +22,17 @@ func New(logLevel string) *slog.Logger {
 	}
 
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-		Level:     slogLevel,
-		AddSource: true,
+		Level: slogLevel,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 			switch a.Key {
 			case slog.TimeKey:
 				a.Value = slog.StringValue(time.Now().Format("2006-01-02 15:04:05"))
 			case slog.LevelKey:
 				a.Value = slog.StringValue(a.Value.String())
-			case slog.SourceKey:
-				a.Value = slog.StringValue(shortenSource(a.Value.String()))
 			}
 			return a
 		},
 	})
 
 	return slog.New(handler)
-}
-
-func shortenSource(source string) string {
-	if len(source) > 0 {
-		parts := strings.Split(source, "/")
-		return parts[len(parts)-1]
-	}
-	return source
 }

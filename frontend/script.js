@@ -41,6 +41,6 @@ document.getElementById('notify-form').addEventListener('submit', async function
         }
     } catch (error) {
         responseDiv.className = 'response error';
-        responseDiv.textContent = `Произошла ошибка сети: ${error.message}`;
+        responseDiv.textContent = `Произошла ошибка сети: ${error.message || error.error}`;
     }
 }); 
