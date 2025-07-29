@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -54,10 +53,6 @@ type MailConfig struct {
 	Password string
 }
 
-type CORSConfig struct {
-	AllowedOrigins []string
-}
-
 type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
@@ -66,7 +61,6 @@ type Config struct {
 	Redis    RedisConfig
 	Kafka    KafkaConfig
 	Mail     MailConfig
-	CORS     CORSConfig
 }
 
 func (c *DatabaseConfig) DSN() string {
@@ -117,9 +111,6 @@ func New() (*Config, error) {
 			User:     getEnv("MAIL_USER", "notifier-app"),
 			Password: getEnv("MAIL_PASSWORD", ""),
 		},
-		CORS: CORSConfig{
-			AllowedOrigins: getEnvAsSlice("CORS_ALLOWED_ORIGINS", []string{"http://localhost:3000"}, ","),
-		},
 	}, nil
 }
 
@@ -153,12 +144,4 @@ func getEnvAsDuration(key string, defaultValue time.Duration) time.Duration {
 		return defaultValue
 	}
 	return value
-}
-
-func getEnvAsSlice(name string, defaultVal []string, sep string) []string {
-	valStr := getEnv(name, "")
-	if valStr == "" {
-		return defaultVal
-	}
-	return strings.Split(valStr, sep)
 }
