@@ -36,15 +36,12 @@ func (s *Mailer) Send(ctx context.Context, notify entity.Notify) error {
 	body := fmt.Sprintf(`
 		<html>
 		  <body style="font-family: Arial, sans-serif; line-height: 1.6;">
-			<h2 style="color: #2c3e50;">Уведомление</h2>
 			<p><strong>Сообщение:</strong> %s</p>
-			<p><strong>Дата отправки:</strong> %s</p>
 			<hr/>
 			<p style="font-size: 12px; color: #999;">ID уведомления: %s</p>
 		  </body>
 		</html>`,
 		notify.Message,
-		notify.SendAt.Format("02.01.2006 15:04:05"),
 		notify.ID,
 	)
 

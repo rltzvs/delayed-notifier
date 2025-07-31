@@ -74,7 +74,6 @@ MAIL_PORT=465
 MAIL_USER=notifier-app
 MAIL_PASSWORD=yourpassword
 LOG_LEVEL=debug
-CORS_ALLOWED_ORIGINS=http://localhost:3000
 ```
 
 ### Миграции

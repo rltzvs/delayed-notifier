@@ -71,7 +71,11 @@ func (s *NotifyService) DeleteNotify(ctx context.Context, notifyID string) error
 }
 
 func (s *NotifyService) UpdateNotifyStatus(ctx context.Context, notifyID, status string) error {
-	return s.db.UpdateNotifyStatus(ctx, notifyID, status)
+	if err := s.db.UpdateNotifyStatus(ctx, notifyID, status); err != nil {
+		return err
+	}
+	_ = s.cache.DeleteNotify(ctx, notifyID)
+	return nil
 }
 
 func (s *NotifyService) ScheduleReadyNotifies(ctx context.Context) error {

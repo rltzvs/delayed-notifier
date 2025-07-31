@@ -141,38 +141,45 @@ func TestDeleteNotify(t *testing.T) {
 
 func TestUpdateNotifyStatus(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		ctx, db, _, _, s := setupTestService(t)
+		ctx, db, cache, _, s := setupTestService(t)
 
 		id := "id1"
 		status := entity.StatusQueued
 		db.On("UpdateNotifyStatus", ctx, id, status).Return(nil).Once()
+		cache.On("DeleteNotify", ctx, id).Return(nil).Once()
 
 		err := s.UpdateNotifyStatus(ctx, id, status)
 
 		assert.NoError(t, err)
 		db.AssertExpectations(t)
+		cache.AssertExpectations(t)
 	})
 }
 
 func TestScheduleReadyNotifies(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		ctx, db, _, producer, s := setupTestService(t)
+		ctx, db, cache, producer, s := setupTestService(t)
 
 		n1 := entity.Notify{ID: "id1", Message: "m1", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusScheduled}
 		n2 := entity.Notify{ID: "id2", Message: "m2", SendAt: mustParseTime(t, "2025-10-26T11:11:11.111111"), Status: entity.StatusScheduled}
 		notifies := []entity.Notify{n1, n2}
 
 		db.On("GetReadyNotifies", ctx).Return(notifies, nil).Once()
+
 		producer.On("Send", ctx, n1).Return(nil).Once()
 		db.On("UpdateNotifyStatus", ctx, n1.ID, entity.StatusQueued).Return(nil).Once()
+		cache.On("DeleteNotify", ctx, n1.ID).Return(nil).Once()
+
 		producer.On("Send", ctx, n2).Return(nil).Once()
 		db.On("UpdateNotifyStatus", ctx, n2.ID, entity.StatusQueued).Return(nil).Once()
+		cache.On("DeleteNotify", ctx, n2.ID).Return(nil).Once()
 
 		err := s.ScheduleReadyNotifies(ctx)
 
 		assert.NoError(t, err)
 		db.AssertExpectations(t)
 		producer.AssertExpectations(t)
+		cache.AssertExpectations(t)
 	})
 
 	t.Run("db error", func(t *testing.T) {
@@ -207,7 +214,7 @@ func TestScheduleReadyNotifies(t *testing.T) {
 	})
 
 	t.Run("update status error", func(t *testing.T) {
-		ctx, db, _, producer, s := setupTestService(t)
+		ctx, db, cache, producer, s := setupTestService(t)
 
 		n1 := entity.Notify{ID: "id1", Message: "m1", SendAt: mustParseTime(t, "2025-10-25T10:10:10.555555"), Status: entity.StatusScheduled}
 		n2 := entity.Notify{ID: "id2", Message: "m2", SendAt: mustParseTime(t, "2025-10-26T11:11:11.111111"), Status: entity.StatusScheduled}
@@ -225,5 +232,6 @@ func TestScheduleReadyNotifies(t *testing.T) {
 		producer.AssertNotCalled(t, "Send", ctx, n2)
 		db.AssertCalled(t, "UpdateNotifyStatus", ctx, n1.ID, entity.StatusQueued)
 		db.AssertNotCalled(t, "UpdateNotifyStatus", ctx, n2.ID, entity.StatusQueued)
+		cache.AssertNotCalled(t, "DeleteNotify", mock.Anything, mock.Anything)
 	})
 }

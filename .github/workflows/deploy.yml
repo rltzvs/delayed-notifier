@@ -84,6 +84,6 @@ jobs:
           script: |
             set -e
             cd /home/${{ secrets.VPS_USER }}/delayed-notifier
-            docker-compose down
+            docker-compose down --remove-orphans
             docker-compose up -d --build
             docker image prune -f

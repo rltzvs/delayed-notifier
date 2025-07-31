@@ -21,7 +21,7 @@ document.getElementById('notify-form').addEventListener('submit', async function
     responseDiv.textContent = '';
 
     try {
-        const response = await fetch(`/api/notify`, {
+        const response = await fetch(`/delayed-notifier/notify`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
